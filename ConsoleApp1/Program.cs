@@ -1,5 +1,8 @@
 ﻿internal class Program
 {
+    /*
+    Запустите для пошаговой демонстрации алгоритмов на примере тестового массива
+    */
     private static void Main(string[] args)
     {
         int[] worst = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
@@ -11,6 +14,10 @@
 
         Console.WriteLine("Insertion");
         InsertionSort(worst.Clone() as int[]);
+        Console.WriteLine();
+
+        Console.WriteLine("Selection");
+        SelectionSort(worst.Clone() as int[]);
         Console.WriteLine();
 
     }
@@ -66,6 +73,38 @@
 
         return arr;
     }
+
+
+    /*
+    Сортировка выбором — это простой и интуитивно понятный алгоритм сортировки. Он работает путем деления массива на две части — отсортированную и несортированную. 
+    Изначально отсортированная часть пуста, а несортированная часть содержит все элементы. Алгоритм многократно выбирает наименьший (или наибольший, если сортировка по убыванию) 
+    элемент из несортированной части и перемещает его в конец отсортированной части. Процесс продолжается до тех пор, пока несортированная часть не станет пустой, 
+    а отсортированная часть не будет содержать все элементы. Сортировка выбором неэффективна для больших списков, так как ее временная сложность равна O(n²), 
+    где n — количество элементов.
+    */
+    private static int[] SelectionSort(int[] arr, int step = 0)
+    {
+        int length = arr.Length;
+
+        for (int i = 0; i < length; i++)
+        {
+            int minIndex = i;
+
+            for (int j = i + 1; j < length; j++)
+            {
+                if (arr[minIndex] > arr[j])
+                    minIndex = j;
+            }
+
+            if (i != minIndex)
+                (arr[minIndex], arr[i]) = (arr[i], arr[minIndex]);
+
+            Write(arr, $"(i = {i}), step = {++step}");
+        }
+
+        return arr;
+    }
+
 
     public static void Write(int[] arr, string stat = "")
     {
