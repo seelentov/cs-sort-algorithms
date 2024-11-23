@@ -5,27 +5,32 @@
     */
     private static void Main(string[] args)
     {
-        int[] worst = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
-        Write(worst);
+        int[] arr = [7, 4, 9, 1, 10, 5, 6, 2, 3, 0, 8];
+        Write(arr);
 
         Console.WriteLine("Bubble");
-        BubbleSort(worst.Clone() as int[]);
+        BubbleSort([.. arr]);
         Console.WriteLine();
 
         Console.WriteLine("Insertion");
-        InsertionSort(worst.Clone() as int[]);
+        InsertionSort([.. arr]);
         Console.WriteLine();
 
         Console.WriteLine("Selection");
-        SelectionSort(worst.Clone() as int[]);
+        SelectionSort([.. arr]);
         Console.WriteLine();
 
         Console.WriteLine("Merge");
-        int[] worst2 = worst.Clone() as int[];
-        MergeSort(worst2);
-        Write(worst2);
+        MergeSort([.. arr]);
         Console.WriteLine();
 
+        Console.WriteLine("Quick");
+        QuickSort([.. arr]);
+        Console.WriteLine();
+
+        Console.WriteLine("Heap");
+        HeapSort.Sort([.. arr]);
+        Console.WriteLine();
     }
 
     /*
@@ -142,21 +147,14 @@
         MergeSort(left, step);
         MergeSort(right, step);
 
-        Merge(arr, left, right);
+        int y = 0, j = 0, k = 0;
 
-        Write(arr, $"step = {step}");
-    }
-
-    private static void Merge(int[] arr, int[] left, int[] right)
-    {
-        int i = 0, j = 0, k = 0;
-
-        while (i < left.Length && j < right.Length)
+        while (y < left.Length && j < right.Length)
         {
-            if (left[i] <= right[j])
+            if (left[y] <= right[j])
             {
-                arr[k] = left[i];
-                i++;
+                arr[k] = left[y];
+                y++;
             }
             else
             {
@@ -167,10 +165,10 @@
             k++;
         }
 
-        while (i < left.Length)
+        while (y < left.Length)
         {
-            arr[k] = left[i];
-            i++;
+            arr[k] = left[y];
+            y++;
             k++;
         }
 
@@ -180,8 +178,112 @@
             j++;
             k++;
         }
+
+        Write(arr, $"step = {step}");
     }
 
+    /*
+    Быстрая сортировка, также известная как сортировка с обменом разделами, представляет собой эффективный алгоритм сортировки на месте, в котором используется принцип 
+    «разделяй и властвуй». Он был разработан Тони Хоаром в 1959 году. Он действует путем выбора «опорного» элемента из массива и разделения других элементов на два подмассива 
+    в зависимости от того, меньше или больше они, чем опорный элемент. Затем подмассивы рекурсивно сортируются. Этот процесс продолжается до тех пор, пока не будет достигнут 
+    базовый случай, то есть когда массив или подмассив имеет ноль или один элемент и, следовательно, уже отсортирован. Быстрая сортировка может иметь наихудшую производительность 
+    O(n^2), если ведущая точка является наименьшим или самым большим элементом в массиве, хотя этот сценарий встречается редко, если ведущая точка выбирается случайным образом. 
+    Средняя временная сложность случая равна O(n log n).
+    */
+    public static List<int> QuickSort(List<int> arr, int step = 0)
+    {
+        if (arr.Count < 2)
+        {
+            return arr;
+        }
+
+        step++;
+        int pivot = arr.Count / 2;
+
+        List<int> less = [];
+        List<int> moreOrEqual = [];
+
+        for (int i = 0; i < arr.Count; i++)
+        {
+            if (i == pivot)
+            {
+                continue;
+            }
+            else if (arr[i] < arr[pivot])
+            {
+                less.Add(arr[i]);
+            }
+            else
+            {
+                moreOrEqual.Add(arr[i]);
+            }
+        }
+
+        List<int> res = [.. QuickSort(less, step), arr[pivot], .. QuickSort(moreOrEqual, step)];
+
+        Write([.. res], $"step = {step}");
+
+
+        return res;
+    }
+
+    /*
+    Heap sort — это алгоритм сортировки, основанный на использовании кучи (heap). Куча — это бинарное дерево, удовлетворяющее свойству кучи: значение каждого узла больше или равно значениям его потомков (для max-кучи).  
+    Heap sort работает в два этапа:
+
+    1. Построение кучи:  Преобразование входного массива в max-кучу.
+    2. Извлечение элементов: Повторяющееся извлечение максимального элемента (корня кучи) и его размещение в конце отсортированного массива.
+    */
+    public class HeapSort
+    {
+        public static void Sort(int[] arr)
+        {
+            int length = arr.Length;
+
+            //Построение кучи
+            for (int i = length / 2 - 1; i >= 0; i--)
+            {
+                Heapify(arr, length, i);
+            }
+
+            //Сортировка, пересоздание кучи с переносом первого (наибольшего) элемента от последнего элемента к второму.
+            for (int i = length - 1; i > 0; i--)
+            {
+                (arr[0], arr[i]) = (arr[i], arr[0]);
+                Heapify(arr, i, 0);
+            }
+        }
+
+        private static void Heapify(int[] arr, int length, int i, int step = 0)
+        {
+            int largest = i;
+            int left = 2 * i + 1;
+            int right = 2 * i + 2;
+
+            if (left < length && arr[left] > arr[largest])
+            {
+                largest = left;
+            }
+
+
+            if (right < length && arr[right] > arr[largest])
+            {
+                largest = right;
+            }
+
+            if (largest != i)
+            {
+                (arr[i], arr[largest]) = (arr[largest], arr[i]);
+            }
+
+            Write(arr, $"(Построение кучи, i = {i}, шаг {++step}");
+
+            if (largest != i)
+            {
+                Heapify(arr, length, largest);
+            }
+        }
+    }
 
     public static void Write(int[] arr, string stat = "")
     {
