@@ -20,6 +20,12 @@
         SelectionSort(worst.Clone() as int[]);
         Console.WriteLine();
 
+        Console.WriteLine("Merge");
+        int[] worst2 = worst.Clone() as int[];
+        MergeSort(worst2);
+        Write(worst2);
+        Console.WriteLine();
+
     }
 
     /*
@@ -103,6 +109,77 @@
         }
 
         return arr;
+    }
+
+    /*
+   Сортировка слиянием — это тип алгоритма сортировки, который следует парадигме «разделяй и властвуй». Он был изобретен Джоном фон Нейманом в 1945 году. 
+   Этот алгоритм работает путем деления несортированного списка на n разделов, каждый из которых содержит один элемент (список из одного элемента считается отсортированным), 
+   а затем многократного слияния разделов для создания новых отсортированных списков, пока не останется только 1 отсортированный список. Этот результирующий список 
+   является полностью отсортированным списком. Процесс деления списка выполняется рекурсивно, пока он не достигнет базового случая списка с одним элементом.
+   Сортировка слиянием имеет временную сложность O(n log n) для всех случаев (наилучшего, среднего и наихудшего), что делает ее высокоэффективной для больших наборов данных.
+   */
+    private static void MergeSort(int[] arr, int step = 0)
+    {
+        step++;
+
+        if (arr.Length <= 1)
+        {
+            Write(arr, $"step = {step}");
+            return;
+        }
+
+        int mid = arr.Length / 2;
+
+        int[] left = new int[mid];
+        int[] right = new int[arr.Length - mid];
+
+        for (int i = 0; i < mid; i++)
+            left[i] = arr[i];
+
+        for (int i = mid; i < arr.Length; i++)
+            right[i - mid] = arr[i];
+
+        MergeSort(left, step);
+        MergeSort(right, step);
+
+        Merge(arr, left, right);
+
+        Write(arr, $"step = {step}");
+    }
+
+    private static void Merge(int[] arr, int[] left, int[] right)
+    {
+        int i = 0, j = 0, k = 0;
+
+        while (i < left.Length && j < right.Length)
+        {
+            if (left[i] <= right[j])
+            {
+                arr[k] = left[i];
+                i++;
+            }
+            else
+            {
+                arr[k] = right[j];
+                j++;
+            }
+
+            k++;
+        }
+
+        while (i < left.Length)
+        {
+            arr[k] = left[i];
+            i++;
+            k++;
+        }
+
+        while (j < right.Length)
+        {
+            arr[k] = right[j];
+            j++;
+            k++;
+        }
     }
 
 
